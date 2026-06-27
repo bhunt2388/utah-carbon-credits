@@ -803,8 +803,33 @@ footer{
       </div>
       <div style="margin-bottom:20px">
         <label style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink70);margin-bottom:6px">Your 2025 Federal Tax Liability *</label>
-        <input type="text" id="f_face" required placeholder="e.g. 2.75M, 4M, 4.5M, 10M" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:var(--sans);outline:none;box-sizing:border-box"/>
-        <div id="f_face_parsed" style="display:none;margin-top:8px;font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600"></div>
+        <div style="position:relative">
+          <input type="text" id="f_face" required placeholder="e.g. 2.75M, 4M, 10M" style="width:100%;padding:12px 48px 12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:var(--mono);outline:none;box-sizing:border-box;transition:border-color 0.2s" oninput="window._faceUpdate && window._faceUpdate()"/>
+          <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;color:var(--ink45);pointer-events:none">M</span>
+        </div>
+        <div id="f_face_error" style="display:none;margin-top:6px;font-size:12px;color:#c43232;display:flex;align-items:center;gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span id="f_face_error_msg"></span>
+        </div>
+        <!-- Savings preview -->
+        <div id="f_savings_preview" style="display:none;background:var(--navy);border-radius:10px;padding:20px 20px;margin-top:12px">
+          <div style="font-size:10px;font-family:var(--mono);letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px">Your Estimated Savings</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:14px">
+              <div style="font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Credits Available</div>
+              <div id="prev_credits" style="font-family:var(--mono);font-size:18px;color:#fff;font-weight:500"></div>
+            </div>
+            <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:14px">
+              <div style="font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Your Cost</div>
+              <div id="prev_cost" style="font-family:var(--mono);font-size:18px;color:#c9a961;font-weight:500"></div>
+            </div>
+            <div style="background:rgba(20,107,58,0.25);border:1px solid rgba(20,107,58,0.4);border-radius:8px;padding:14px;grid-column:1/-1">
+              <div style="font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Permanent Tax Savings</div>
+              <div id="prev_savings" style="font-family:var(--mono);font-size:22px;color:#4dd882;font-weight:600"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.5">Illustrative only. Subject to §38(c) limitation. Consult your tax advisor.</div>
+        </div>
       </div>
       <div style="margin-bottom:16px">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
@@ -959,22 +984,68 @@ footer{
     return isNaN(n) ? 0 : Math.round(n * mult);
   }
 
-  var faceInput = document.getElementById('f_face');
-  var faceParsed = document.getElementById('f_face_parsed');
-  faceInput.addEventListener('input', function() {
-    var raw = faceInput.value;
-    var n = parseTaxInput(raw);
-    if (n >= 500000) {
-      var credits = Math.min(n, 30000000);
-      var fee = credits * 0.85;
-      var savings = credits * 0.15;
-      var fmt = function(x) { return '$' + x.toLocaleString('en-US'); };
-      faceParsed.style.display = 'block';
-      faceParsed.textContent = 'Credits available: ' + fmt(credits) + '  ·  Your cost: ' + fmt(fee) + '  ·  Tax savings: ' + fmt(savings);
-    } else {
-      faceParsed.style.display = 'none';
+  function fmtM(n) { return '$' + (n/1000000).toFixed(n%1000000===0?0:2).replace(/\.?0+$/,'') + 'M'; }
+  function fmtD(n) { return '$' + n.toLocaleString('en-US'); }
+
+  window._faceUpdate = function() {
+    var input = document.getElementById('f_face');
+    var errBox = document.getElementById('f_face_error');
+    var errMsg = document.getElementById('f_face_error_msg');
+    var preview = document.getElementById('f_savings_preview');
+    var raw = input.value.trim();
+
+    // Reset
+    input.style.borderColor = 'var(--border)';
+    errBox.style.display = 'none';
+    preview.style.display = 'none';
+
+    if (!raw) return;
+
+    // Validate — must end in M (or be a plain number >= 500000)
+    var upper = raw.toUpperCase().replace(/[$,\s]/g,'');
+    var hasLetter = /[A-Z]/.test(upper);
+    var endsInM = upper.endsWith('M');
+    var endsInK = upper.endsWith('K');
+    var endsInB = upper.endsWith('B');
+    var isPlainNumber = !hasLetter && !upper.endsWith('.');
+
+    if (hasLetter && !endsInM && !endsInK && !endsInB) {
+      input.style.borderColor = '#c43232';
+      errBox.style.display = 'flex';
+      errMsg.textContent = 'Use "M" for millions — e.g. type 4M for $4,000,000';
+      return;
     }
-  });
+
+    var n = parseTaxInput(raw);
+
+    // Auto-append M if plain number
+    if (isPlainNumber && n > 0 && n < 1000) {
+      input.style.borderColor = '#c43232';
+      errBox.style.display = 'flex';
+      errMsg.textContent = 'Enter your amount in millions — e.g. type 4M for $4,000,000 or 4.5M for $4,500,000';
+      return;
+    }
+
+    if (n > 0 && n < 500000) {
+      input.style.borderColor = '#c43232';
+      errBox.style.display = 'flex';
+      errMsg.textContent = 'Minimum tax liability for this program is $500,000. Enter at least 0.5M.';
+      return;
+    }
+
+    if (n <= 0) return;
+
+    // Valid — show savings preview
+    input.style.borderColor = 'var(--green)';
+    var credits = Math.min(n, 30000000);
+    var cost = credits * 0.85;
+    var savings = credits * 0.15;
+
+    document.getElementById('prev_credits').textContent = fmtD(credits);
+    document.getElementById('prev_cost').textContent = fmtD(cost);
+    document.getElementById('prev_savings').textContent = fmtD(savings);
+    preview.style.display = 'block';
+  };
 
   // ── INTAKE FORM SUBMISSION ──
 })();

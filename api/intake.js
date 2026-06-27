@@ -46,23 +46,32 @@ async function cloneAndSendDoc(buyerName, buyerEmail, buyerTitle, deal, closingD
     'Content-Type': 'application/json',
   };
 
-  // Step 1: Upload a fresh copy of the document for this buyer
-  // We re-upload the base doc file from URL so each buyer gets their own clean doc
-  const fs = await import('fs');
-  const path = await import('path');
-  const FormData = (await import('form-data')).default;
+  // Step 1: Fetch the master doc from its public URL and re-upload for this buyer
+  const docUrl = 'https://utahcarboncredits.com/docs/Welcome1231_Assignment_Agreement.docx';
+  const docBuffer = await fetch(docUrl).then(r => r.arrayBuffer());
 
-  const docPath = path.join(process.cwd(), 'docs', 'Welcome1231_Assignment_Agreement.docx');
-  const form = new FormData();
-  form.append('file', fs.createReadStream(docPath), {
-    filename: `Welcome1231_Assignment_${buyerName.replace(/\s+/g,'_')}.docx`,
-    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  });
+  const boundary = '----FormBoundary' + Math.random().toString(36).slice(2);
+  const filename = `Welcome1231_Assignment_${buyerName.replace(/\s+/g,'_')}.docx`;
+
+  // Build multipart body manually
+  const encoder = new TextEncoder();
+  const header = encoder.encode(
+    `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${filename}"\r\nContent-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document\r\n\r\n`
+  );
+  const footer = encoder.encode(`\r\n--${boundary}--\r\n`);
+
+  const body = new Uint8Array(header.byteLength + docBuffer.byteLength + footer.byteLength);
+  body.set(header, 0);
+  body.set(new Uint8Array(docBuffer), header.byteLength);
+  body.set(footer, header.byteLength + docBuffer.byteLength);
 
   const uploadRes = await fetch(`${SIGNNOW_API}/document`, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${SIGNNOW_TOKEN}`, ...form.getHeaders() },
-    body: form,
+    headers: {
+      'Authorization': `Bearer ${SIGNNOW_TOKEN}`,
+      'Content-Type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: body,
   });
   const uploaded = await uploadRes.json();
   if (!uploaded.id) throw new Error('Upload failed: ' + JSON.stringify(uploaded));

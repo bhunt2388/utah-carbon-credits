@@ -3,6 +3,7 @@
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "cpa-verify.html", "use": "@vercel/static" },
+    { "src": "docs/**", "use": "@vercel/static" },
     { "src": "api/intake.js", "use": "@vercel/node" },
     { "src": "api/cpa.js", "use": "@vercel/node" }
   ],
@@ -10,6 +11,7 @@
     { "src": "/api/intake", "dest": "/api/intake.js" },
     { "src": "/api/cpa", "dest": "/api/cpa.js" },
     { "src": "/cpa-verify", "dest": "/cpa-verify.html" },
+    { "src": "/docs/(.*)", "dest": "/docs/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
