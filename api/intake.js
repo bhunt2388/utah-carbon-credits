@@ -46,9 +46,43 @@ async function cloneAndSendDoc(buyerName, buyerEmail, buyerTitle, deal, closingD
     'Content-Type': 'application/json',
   };
 
-  // Send invite directly on the master doc — no copy needed
-  // Each buyer gets a unique signed copy through SignNow's system
-  const inviteRes = await fetch(`${SIGNNOW_API}/document/${TEMPLATE_DOC_ID}/invite`, {
+  // Step 1: Upload a fresh copy of the document for this buyer
+  // We re-upload the base doc file from URL so each buyer gets their own clean doc
+  const fs = await import('fs');
+  const path = await import('path');
+  const FormData = (await import('form-data')).default;
+
+  const docPath = path.join(process.cwd(), 'docs', 'Welcome1231_Assignment_Agreement.docx');
+  const form = new FormData();
+  form.append('file', fs.createReadStream(docPath), {
+    filename: `Welcome1231_Assignment_${buyerName.replace(/\s+/g,'_')}.docx`,
+    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
+
+  const uploadRes = await fetch(`${SIGNNOW_API}/document`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${SIGNNOW_TOKEN}`, ...form.getHeaders() },
+    body: form,
+  });
+  const uploaded = await uploadRes.json();
+  if (!uploaded.id) throw new Error('Upload failed: ' + JSON.stringify(uploaded));
+  const docId = uploaded.id;
+
+  // Step 2: Add signature fields to the new doc
+  const last = 7; // 0-indexed page 8 = signature page
+  await fetch(`${SIGNNOW_API}/document/${docId}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({ fields: [
+      { type:'signature', role:'Assignee', name:'Sig', required:1, page_number:last, x:77, y:490, width:220, height:50 },
+      { type:'text', role:'Assignee', name:'SignDate', required:1, page_number:last, x:330, y:490, width:150, height:30, label:'Date' },
+      { type:'text', role:'Assignee', name:'PrintName', required:1, page_number:last, x:77, y:440, width:220, height:30, label:'Print Name' },
+      { type:'text', role:'Assignee', name:'Title', required:0, page_number:last, x:330, y:440, width:220, height:30, label:'Title' },
+    ]}),
+  });
+
+  // Step 3: Send invite
+  const inviteRes = await fetch(`${SIGNNOW_API}/document/${docId}/invite`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -70,7 +104,7 @@ Your Assignment Agreement has been prepared with the following deal terms:
 
 • Face Value of Tax Credits: ${fmtDollars(deal.face)}
 • Assignment Fee (your single payment to Welcome 1231 LLC): ${fmtDollars(deal.assignmentFee)}
-• Net Tax Benefit to You: ${fmtDollars(deal.netBenefit)}
+• Net Tax Savings: ${fmtDollars(deal.netBenefit)}
 • Effective Tax Savings Rate: ${deal.savingsRate}
 
 Please review and sign the attached agreement at your earliest convenience.
@@ -98,7 +132,7 @@ Welcome 1231 LLC · Utah Carbon MGR LLC`,
 
   const invite = await inviteRes.json();
   if (!inviteRes.ok) throw new Error('SignNow invite failed: ' + JSON.stringify(invite));
-  return { docId: TEMPLATE_DOC_ID, invite };
+  return { docId, invite };
 }
 
 async function sendNotificationEmail(buyerName, buyerEmail, buyerPhone, deal) {
