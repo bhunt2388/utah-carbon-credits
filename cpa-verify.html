@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CPA Accredited Investor Verification — Utah Carbon Credits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B2545;--green:#146B3A;--gold:#9a7814;
+  --stone:#F7F5F0;--stone2:#EDEAE4;--white:#ffffff;
+  --ink:#1E2428;--ink70:rgba(30,36,40,0.70);--ink45:rgba(30,36,40,0.45);
+  --border:rgba(11,37,69,0.10);--border-g:rgba(154,120,20,0.22);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--stone);color:var(--ink);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--navy);padding:24px;text-align:center}
+.header-top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.header-mark{width:32px;height:32px;background:rgba(255,255,255,0.12);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:#fff}
+.header-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.2px}
+.header h1{font-family:var(--serif);font-size:clamp(1.4rem,4vw,2rem);font-weight:600;color:#fff;margin-bottom:4px}
+.header p{font-size:13px;color:rgba(255,255,255,0.60)}
+
+/* NOTICE BAND */
+.notice{background:rgba(154,120,20,0.12);border-bottom:1px solid var(--border-g);padding:14px 24px;text-align:center;font-size:13px;color:var(--gold);font-weight:500}
+
+/* MAIN */
+.main{max-width:640px;margin:0 auto;padding:48px 24px 80px}
+
+/* INFO BOX */
+.info-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:32px}
+.info-box h2{font-family:var(--serif);font-size:1.3rem;font-weight:600;color:var(--navy);margin-bottom:10px}
+.info-box p{font-size:14px;color:var(--ink70);line-height:1.7;margin-bottom:10px}
+.info-box p:last-child{margin-bottom:0}
+.irc-tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;padding:3px 8px;background:rgba(11,37,69,0.07);color:var(--navy);border-radius:4px;margin-bottom:8px}
+
+/* FORM CARD */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 20px rgba(11,37,69,0.06)}
+.form-section{padding:28px;border-bottom:1px solid var(--border)}
+.form-section:last-child{border-bottom:none}
+.form-section-title{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink45);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.form-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink70);margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:15px;font-family:var(--sans);color:var(--ink);
+  background:var(--white);outline:none;
+  transition:border-color 0.2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy)}
+.field textarea{resize:vertical;min-height:90px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.field-row{grid-template-columns:1fr}}
+
+/* ATTESTATIONS */
+.attest{background:var(--stone);border-radius:8px;padding:20px;margin-bottom:16px}
+.attest-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.attest-item:last-child{margin-bottom:0}
+.attest-item input[type=checkbox]{margin-top:2px;flex-shrink:0;width:17px;height:17px;cursor:pointer;accent-color:var(--navy)}
+.attest-item label{font-size:13px;color:var(--ink70);line-height:1.6;cursor:pointer}
+.attest-item label strong{color:var(--navy)}
+
+/* SELECT */
+select option{background:#fff;color:var(--ink)}
+
+/* SUBMIT */
+.submit-btn{
+  width:100%;padding:16px;background:var(--navy);color:#fff;
+  font-size:15px;font-weight:700;border:none;border-radius:9px;
+  cursor:pointer;font-family:var(--sans);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:opacity 0.2s;
+}
+.submit-btn:hover{opacity:0.88}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* ERROR */
+.form-error{display:none;background:rgba(200,50,50,0.08);border:1px solid rgba(200,50,50,0.3);border-radius:8px;padding:12px 16px;font-size:13px;color:#c43232;margin-bottom:16px}
+
+/* SUCCESS */
+.success-box{display:none;background:var(--white);border:1.5px solid var(--green);border-radius:var(--r);padding:40px;text-align:center}
+.success-icon{font-size:48px;margin-bottom:16px}
+.success-box h2{font-family:var(--serif);font-size:1.8rem;color:var(--navy);margin-bottom:8px}
+.success-box p{font-size:15px;color:var(--ink70);line-height:1.7;max-width:460px;margin:0 auto}
+
+/* FOOTER */
+.page-footer{background:var(--stone2);border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:var(--ink45);line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="header-mark">§</div>
+    <span class="header-name">Utah Carbon Credits</span>
+  </div>
+  <h1>CPA Accredited Investor Verification</h1>
+  <p>Confidential · For Licensed Tax Professionals Only</p>
+</div>
+
+<div class="notice">
+  This form is for use by licensed CPAs, attorneys, and registered investment advisors verifying client accredited investor status under Rule 506(c)(2)(ii) of Regulation D.
+</div>
+
+<div class="main">
+
+  <div class="info-box">
+    <div class="irc-tag">Rule 506(c)(2)(ii) · Regulation D</div>
+    <h2>What This Form Is For</h2>
+    <p>Your client is acquiring Section 45Q Carbon Oxide Sequestration Tax Credits from Welcome 1231 LLC, a Utah limited liability company. The offering is made pursuant to Rule 506(c) of Regulation D, which requires the Company to take reasonable steps to verify that all purchasers are Accredited Investors.</p>
+    <p>As your client's licensed CPA, attorney, or registered investment advisor, your written verification satisfies this requirement under Rule 506(c)(2)(ii). By completing this form you are providing a professional attestation — not legal advice to the Company.</p>
+    <p>All submissions are confidential and used solely for securities law compliance purposes.</p>
+  </div>
+
+  <div class="success-box" id="successBox">
+    <div class="success-icon">✓</div>
+    <h2>Verification Submitted</h2>
+    <p>Thank you. Your client's accredited investor verification has been received and logged. The Welcome 1231 LLC team will be in touch to confirm the transaction is cleared to close.</p>
+    <p style="margin-top:16px;font-size:13px;color:var(--ink45)">Questions? Contact us at <strong style="color:var(--navy)">801-400-2916</strong></p>
+  </div>
+
+  <div class="form-card" id="formCard">
+    <form id="cpaForm">
+
+      <!-- CLIENT INFO -->
+      <div class="form-section">
+        <div class="form-section-title">Client Information</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Client Full Legal Name *</label>
+            <input type="text" id="c_name" required placeholder="John Smith"/>
+          </div>
+          <div class="field">
+            <label>Client Email *</label>
+            <input type="email" id="c_email" required placeholder="john@company.com"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Client Entity Name (if acquiring as entity)</label>
+          <input type="text" id="c_entity" placeholder="Smith Capital LLC — leave blank if individual"/>
+        </div>
+        <div class="field">
+          <label>Credit Face Value Requested</label>
+          <select id="c_facevalue">
+            <option value="">Select...</option>
+            <option value="$500,000">$500,000</option>
+            <option value="$1,000,000">$1,000,000</option>
+            <option value="$2,000,000">$2,000,000</option>
+            <option value="$5,000,000">$5,000,000</option>
+            <option value="$10,000,000">$10,000,000</option>
+            <option value="$19,000,000">$19,000,000 (full facility)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CPA INFO -->
+      <div class="form-section">
+        <div class="form-section-title">Your Information (Verifying Professional)</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Your First Name *</label>
+            <input type="text" id="p_first" required placeholder="Jane"/>
+          </div>
+          <div class="field">
+            <label>Your Last Name *</label>
+            <input type="text" id="p_last" required placeholder="Doe"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Firm / Practice Name *</label>
+          <input type="text" id="p_firm" required placeholder="Doe & Associates CPA"/>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Your Email *</label>
+            <input type="email" id="p_email" required placeholder="jane@doecpa.com"/>
+          </div>
+          <div class="field">
+            <label>Your Phone</label>
+            <input type="tel" id="p_phone" placeholder="801-555-0100"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Professional Role *</label>
+            <select id="p_role" required>
+              <option value="">Select...</option>
+              <option value="CPA">CPA</option>
+              <option value="Tax Attorney">Tax Attorney</option>
+              <option value="Registered Investment Advisor (RIA)">Registered Investment Advisor (RIA)</option>
+              <option value="CFP">CFP</option>
+              <option value="Registered Broker-Dealer">Registered Broker-Dealer</option>
+              <option value="Other Licensed Professional">Other Licensed Professional</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>License / Bar / CRD Number</label>
+            <input type="text" id="p_license" placeholder="CPA-123456"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>State of Licensure</label>
+          <input type="text" id="p_state" placeholder="Utah"/>
+        </div>
+      </div>
+
+      <!-- ACCREDITED STATUS -->
+      <div class="form-section">
+        <div class="form-section-title">Accredited Investor Verification</div>
+        <p style="font-size:13px;color:var(--ink70);line-height:1.7;margin-bottom:20px">Select the basis on which your client qualifies as an Accredited Investor under Rule 501(a) of Regulation D:</p>
+        <div class="field">
+          <label>Basis for Accredited Investor Status *</label>
+          <select id="a_basis" required>
+            <option value="">Select basis...</option>
+            <option value="Individual net worth exceeds $1,000,000 (excluding primary residence)">Individual net worth exceeds $1,000,000 (excluding primary residence)</option>
+            <option value="Individual income exceeds $200,000 in each of the two most recent years ($300,000 joint)">Individual income exceeds $200,000 in each of the two most recent years ($300,000 joint)</option>
+            <option value="Entity with total assets exceeding $5,000,000">Entity with total assets exceeding $5,000,000</option>
+            <option value="Entity in which all equity owners are accredited investors">Entity in which all equity owners are accredited investors</option>
+            <option value="Knowledgeable employee of an investment fund">Knowledgeable employee of an investment fund</option>
+            <option value="Family office with $5M+ AUM">Family office with $5M+ AUM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Estimated 2025 Federal Tax Liability (approximate range) *</label>
+          <select id="a_taxcapacity" required>
+            <option value="">Select range...</option>
+            <option value="$500,000 – $1,000,000">$500,000 – $1,000,000</option>
+            <option value="$1,000,000 – $3,000,000">$1,000,000 – $3,000,000</option>
+            <option value="$3,000,000 – $10,000,000">$3,000,000 – $10,000,000</option>
+            <option value="$10,000,000 – $20,000,000">$10,000,000 – $20,000,000</option>
+            <option value="Over $20,000,000">Over $20,000,000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Additional Notes (optional)</label>
+          <textarea id="a_notes" placeholder="Any additional context about the client's eligibility, §38(c) capacity confirmation, or other relevant information..."></textarea>
+        </div>
+      </div>
+
+      <!-- ATTESTATIONS -->
+      <div class="form-section">
+        <div class="form-section-title">Professional Attestations</div>
+        <div class="attest">
+          <div class="attest-item">
+            <input type="checkbox" id="att1" required/>
+            <label for="att1">I am a licensed <strong>CPA, attorney, registered investment advisor, or registered broker-dealer</strong> and have a current, active professional license or registration in good standing.</label>
+          </div>
+          <div class="attest-item">
+            <input type="checkbox" id="att2" required/>
+            <label for="att2">Based on my <strong>review of the client's financial information</strong>, I confirm that the named client qualifies as an Accredited Investor under Rule 501(a) of Regulation D on the basis selected above.</label>
+          </div>
+          <div class="attest-item">
+            <input type="checkbox" id="att3" required/>
+            <label for="att3">To my knowledge, the client has <strong>sufficient 2025 federal income tax liability</strong> under §38(c) to utilize the §45Q credits in the tax year indicated.</label>
+          </div>
+          <div class="attest-item">
+            <input type="checkbox" id="att4" required/>
+            <label for="att4">I understand this attestation will be <strong>retained by Welcome 1231 LLC</strong> as a compliance record under Rule 506(c)(2)(ii) of Regulation D and may be subject to SEC review.</label>
+          </div>
+          <div class="attest-item">
+            <input type="checkbox" id="att5" required/>
+            <label for="att5">I am providing this verification <strong>in my professional capacity</strong> and am not acting as a broker, placement agent, or finder in connection with this transaction.</label>
+          </div>
+        </div>
+
+        <div class="form-error" id="formError"></div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4M20.618 5.984A12 12 0 1112 2.944 12.02 12.02 0 0020.618 5.984z"/></svg>
+          Submit Verification
+        </button>
+        <p style="font-size:11px;color:var(--ink45);text-align:center;margin-top:12px;line-height:1.6">This attestation is submitted electronically and carries the same weight as a signed letter on firm letterhead under Rule 506(c)(2)(ii). A confirmation will be sent to your email.</p>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  Utah Carbon Credits · Welcome 1231 LLC · Confidential Compliance Use Only<br/>
+  Questions: 801-400-2916 · ben.thrasher20@gmail.com
+</div>
+
+<script>
+document.getElementById('cpaForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const err = document.getElementById('formError');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Submitting...';
+
+  const payload = {
+    clientName:    document.getElementById('c_name').value.trim(),
+    clientEmail:   document.getElementById('c_email').value.trim(),
+    clientEntity:  document.getElementById('c_entity').value.trim(),
+    faceValue:     document.getElementById('c_facevalue').value,
+    cpaFirst:      document.getElementById('p_first').value.trim(),
+    cpaLast:       document.getElementById('p_last').value.trim(),
+    cpaFirm:       document.getElementById('p_firm').value.trim(),
+    cpaEmail:      document.getElementById('p_email').value.trim(),
+    cpaPhone:      document.getElementById('p_phone').value.trim(),
+    cpaRole:       document.getElementById('p_role').value,
+    licenseNumber: document.getElementById('p_license').value.trim(),
+    licenseState:  document.getElementById('p_state').value.trim(),
+    accreditedBasis: document.getElementById('a_basis').value,
+    taxCapacity:   document.getElementById('a_taxcapacity').value,
+    notes:         document.getElementById('a_notes').value.trim(),
+  };
+
+  try {
+    const res = await fetch('/api/cpa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Submission failed. Please try again.');
+
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successBox').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch(ex) {
+    err.textContent = ex.message;
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4M20.618 5.984A12 12 0 1112 2.944 12.02 12.02 0 0020.618 5.984z"/></svg> Submit Verification';
+  }
+});
+</script>
+
+</body>
+</html>
