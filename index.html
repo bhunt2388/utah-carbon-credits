@@ -519,7 +519,7 @@ footer{
       </div>
       <div class="calc-body">
         <label class="calc-label">Your estimated 2025 federal tax liability</label>
-        <input type="range" id="taxSlider" min="1000000" max="40000000" step="500000" value="10000000"/>
+        <input type="range" id="taxSlider" min="1000000" max="40000000" step="500000" value="10000000" oninput="window._calcUpdate && window._calcUpdate()"/>
         <div class="calc-slider-labels">
           <span>$1M</span><span>$10M</span><span>$20M</span><span>$40M+</span>
         </div>
@@ -893,6 +893,7 @@ footer{
   }
 
   function calcUpdate(){
+    window._calcUpdate = calcUpdate;
     var tax = parseInt(slider.value);
     var credits = Math.min(tax, MAX_FACE);
     var cost = credits * RATE;
@@ -954,6 +955,9 @@ footer{
     });
   });
   // ── INTAKE FORM SUBMISSION ──
+})();
+
+(function(){
   document.getElementById('intakeForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
@@ -1016,6 +1020,7 @@ footer{
     }
   });
 
+})();
 </script>
 </body>
 </html>
