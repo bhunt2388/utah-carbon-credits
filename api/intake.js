@@ -21,12 +21,19 @@ Account #:      13553279
 `;
 
 function calcDeal(faceValue) {
-  const face = parseFloat(faceValue) || 0;
-  const assignmentFee = +(face * 0.85).toFixed(2);
-  const creditPurchasePrice = +(face * 0.70).toFixed(2);
-  const netBenefit = +(face * 0.15).toFixed(2);
+  // Parse flexible input: "2.75M", "4m", "4500000", "$4.5M" etc.
+  let raw = String(faceValue).trim().toUpperCase().replace(/[$,\s]/g, '');
+  let mult = 1;
+  if (raw.endsWith('B')) { mult = 1e9; raw = raw.slice(0,-1); }
+  else if (raw.endsWith('M')) { mult = 1e6; raw = raw.slice(0,-1); }
+  else if (raw.endsWith('K')) { mult = 1e3; raw = raw.slice(0,-1); }
+  const face = Math.round((parseFloat(raw) || 0) * mult);
+  const credits = Math.min(face, 30000000);
+  const assignmentFee = +(credits * 0.85).toFixed(2);
+  const creditPurchasePrice = +(credits * 0.70).toFixed(2);
+  const netBenefit = +(credits * 0.15).toFixed(2);
   const savingsRate = '17.6%';
-  return { face, assignmentFee, creditPurchasePrice, netBenefit, savingsRate };
+  return { face: credits, assignmentFee, creditPurchasePrice, netBenefit, savingsRate };
 }
 
 function fmtDollars(n) {
