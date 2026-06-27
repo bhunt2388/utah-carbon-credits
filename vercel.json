@@ -1,5 +1,15 @@
 {
   "version": 2,
-  "builds": [{ "src": "index.html", "use": "@vercel/static" }],
-  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/intake.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/intake", "dest": "/api/intake.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "env": {
+    "SIGNNOW_TOKEN": "10b94f3f59594e3b131ae357c66c33cdc3be5c7831f5abcf41d8318891e897cb",
+    "NOTIFY_EMAIL": "ben.thrasher20@gmail.com"
+  }
 }
