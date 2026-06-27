@@ -116,21 +116,7 @@ Your Assignment Agreement has been prepared with the following deal terms:
 • Net Tax Savings: ${fmtDollars(deal.netBenefit)}
 • Effective Tax Savings Rate: ${deal.savingsRate}
 
-Please review and sign the attached agreement at your earliest convenience.
-
----
-WIRE INSTRUCTIONS — WELCOME 1231 LLC
-⚠️  DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING BY CALLING 801-400-2916
-
-Bank: Mountain America Credit Union
-Address: 3300 Triumph Blvd, Lehi, Utah 84043
-Routing #: 324079555
-Account Name: Welcome 1231 LLC
-Account #: 13553279
-Verify Phone: 801-400-2916
-
-*** Our Wire Instructions Do Not Change ***
----
+Please review and sign the attached agreement at your earliest convenience. Wire instructions are included on the final page of your agreement.
 
 Questions? Call 801-400-2916 or reply to this email.
 
