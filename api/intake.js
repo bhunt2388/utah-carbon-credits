@@ -2,7 +2,7 @@
 // Handles form submission → SignNow doc → Calendly redirect
 
 const SIGNNOW_API = 'https://api.signnow.com';
-const SIGNNOW_TOKEN = process.env.SIGNNOW_TOKEN;
+const SIGNNOW_TOKEN = process.env.SIGNNOW_TOKEN || '10b94f3f59594e3b131ae357c66c33cdc3be5c7831f5abcf41d8318891e897cb';
 const TEMPLATE_DOC_ID = 'a663fba92a7e4598a88240968168e75426cd1c13';
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'ben.thrasher20@gmail.com';
 
@@ -34,46 +34,64 @@ function fmtDollars(n) {
 }
 
 async function cloneAndSendDoc(buyerName, buyerEmail, buyerTitle, deal, closingDate) {
-  // Step 1: Copy the template document
-  const copyRes = await fetch(`${SIGNNOW_API}/document/${TEMPLATE_DOC_ID}/copy`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${SIGNNOW_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ document_name: `Welcome1231_Assignment_${buyerName.replace(/\s+/g,'_')}_${closingDate}` }),
-  });
-  const copied = await copyRes.json();
-  if (!copied.id) throw new Error('SignNow copy failed: ' + JSON.stringify(copied));
-  const docId = copied.id;
+  const headers = {
+    'Authorization': `Bearer ${SIGNNOW_TOKEN}`,
+    'Content-Type': 'application/json',
+  };
 
-  // Step 2: Add text fields / prefill fields via field invite
-  // Step 3: Send for signature to buyer
-  const inviteRes = await fetch(`${SIGNNOW_API}/document/${docId}/invite`, {
+  // Send invite directly on the master doc — no copy needed
+  // Each buyer gets a unique signed copy through SignNow's system
+  const inviteRes = await fetch(`${SIGNNOW_API}/document/${TEMPLATE_DOC_ID}/invite`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${SIGNNOW_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({
       from: NOTIFY_EMAIL,
-      to: [
-        {
-          email: buyerEmail,
-          role: 'Assignee',
-          order: 1,
-          reassign: '0',
-          decline_by_signature: '0',
-          reminder: 1,
-          expiration_days: 14,
-          subject: `Action Required: Sign Your §45Q Credit Purchase Right Assignment Agreement`,
-          message: `Dear ${buyerName},\n\nThank you for your interest in acquiring Section 45Q Carbon Oxide Sequestration Tax Credits through Welcome 1231 LLC.\n\nYour Assignment Agreement has been prepared with the following deal terms:\n\n• Face Value of Tax Credits: ${fmtDollars(deal.face)}\n• Assignment Fee (your payment to Welcome 1231 LLC): ${fmtDollars(deal.assignmentFee)}\n• Net Tax Benefit to You: ${fmtDollars(deal.netBenefit)}\n• Effective Tax Savings Rate: ${deal.savingsRate}\n\nPlease review and sign the attached agreement at your earliest convenience.\n\n---\nWIRE INSTRUCTIONS — WELCOME 1231 LLC\n⚠️  DUE TO WIRE FRAUD: DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING WIRING INSTRUCTIONS BY CALLING 801-400-2916\n\nBank: Mountain America Credit Union\nAddress: 3300 Triumph Blvd, Lehi, Utah 84043\nRouting #: 324079555\nAccount Name: Welcome 1231 LLC\nAccount #: 13553279\n\n*** Our Wire Instructions Do Not Change ***\n---\n\nIf you have any questions, please reply to this email or call 801-400-2916.\n\nThank you,\nWelcome 1231 LLC\nUtah Carbon MGR LLC`,
-        }
-      ],
+      to: [{
+        email: buyerEmail,
+        role: 'Assignee',
+        order: 1,
+        reassign: '0',
+        decline_by_signature: '0',
+        reminder: 1,
+        expiration_days: 14,
+        subject: `Action Required: §45Q Credit Purchase Right Assignment Agreement`,
+        message: `Dear ${buyerName},
+
+Thank you for your interest in acquiring Section 45Q Carbon Oxide Sequestration Tax Credits through Welcome 1231 LLC.
+
+Your Assignment Agreement has been prepared with the following deal terms:
+
+• Face Value of Tax Credits: ${fmtDollars(deal.face)}
+• Assignment Fee (your single payment to Welcome 1231 LLC): ${fmtDollars(deal.assignmentFee)}
+• Net Tax Benefit to You: ${fmtDollars(deal.netBenefit)}
+• Effective Tax Savings Rate: ${deal.savingsRate}
+
+Please review and sign the attached agreement at your earliest convenience.
+
+---
+WIRE INSTRUCTIONS — WELCOME 1231 LLC
+⚠️  DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING BY CALLING 801-400-2916
+
+Bank: Mountain America Credit Union
+Address: 3300 Triumph Blvd, Lehi, Utah 84043
+Routing #: 324079555
+Account Name: Welcome 1231 LLC
+Account #: 13553279
+Verify Phone: 801-400-2916
+
+*** Our Wire Instructions Do Not Change ***
+---
+
+Questions? Call 801-400-2916 or reply to this email.
+
+Welcome 1231 LLC · Utah Carbon MGR LLC`,
+      }],
     }),
   });
+
   const invite = await inviteRes.json();
-  return { docId, invite };
+  if (!inviteRes.ok) throw new Error('SignNow invite failed: ' + JSON.stringify(invite));
+  return { docId: TEMPLATE_DOC_ID, invite };
 }
 
 async function sendNotificationEmail(buyerName, buyerEmail, buyerPhone, deal) {
