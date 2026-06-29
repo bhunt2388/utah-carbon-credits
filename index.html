@@ -748,19 +748,37 @@ footer{
     <h2 style="font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:600;letter-spacing:-0.02em;line-height:1.1;color:var(--navy);margin-bottom:12px">Receive your agreement.<br/>Schedule your call.</h2>
     <p style="font-size:16px;color:var(--ink70);margin-bottom:36px;line-height:1.7">Fill out the form below. Your Assignment Agreement will be sent to your email for review and e-signature. You'll then be redirected to schedule your confidential 30-minute consultation with our team.</p>
 
-    <div id="intakeSuccess" style="display:none;background:var(--white);border:1.5px solid var(--green);border-radius:14px;padding:36px;text-align:center">
-      <div style="font-size:40px;margin-bottom:16px">✓</div>
-      <h3 style="font-family:var(--serif);font-size:1.6rem;color:var(--navy);margin-bottom:8px">Agreement sent to your email.</h3>
-      <p style="color:var(--ink70);margin-bottom:24px;line-height:1.6">Check your inbox — your Assignment Agreement has been sent via SignNow for review and signature. Redirecting you to schedule your call in a moment...</p>
-      <div id="dealSummary" style="background:var(--stone);border-radius:10px;padding:20px;text-align:left;margin-bottom:20px;font-size:14px;line-height:2"></div>
-      <div style="background:rgba(200,50,50,0.07);border:1.5px solid rgba(200,50,50,0.3);border-radius:10px;padding:16px;text-align:left;margin-bottom:24px">
-        <p style="font-size:13px;font-weight:700;color:#c43232;margin-bottom:6px">⚠️ WIRE FRAUD WARNING</p>
-        <p style="font-size:13px;color:var(--ink70);line-height:1.6">DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING BY CALLING <strong style="color:var(--navy)">801-400-2916</strong>. Wire instructions are provided in your signed agreement only.</p>
+    <div id="intakeSuccess" style="display:none">
+      <!-- Step 1 confirmed -->
+      <div style="background:var(--white);border:1.5px solid var(--green);border-radius:14px;padding:28px 32px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <div style="width:40px;height:40px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:2px">Step 1 Complete</div>
+            <h3 style="font-family:var(--serif);font-size:1.4rem;color:var(--navy);line-height:1.2">Agreement sent to your email.</h3>
+          </div>
+        </div>
+        <div id="dealSummary" style="background:var(--stone);border-radius:10px;padding:16px 20px;font-size:14px;line-height:2;margin-bottom:14px"></div>
+        <div style="background:rgba(200,50,50,0.07);border:1.5px solid rgba(200,50,50,0.3);border-radius:8px;padding:12px 16px">
+          <p style="font-size:12px;font-weight:700;color:#c43232;margin-bottom:4px">⚠️ WIRE FRAUD WARNING</p>
+          <p style="font-size:12px;color:var(--ink70);line-height:1.5">DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING BY CALLING <strong style="color:var(--navy)">801-400-2916</strong>. Wire instructions are in your signed agreement only.</p>
+        </div>
       </div>
-      <a id="calendlyRedirect" href="https://calendly.com/carbon-credits-ben" target="_blank" class="btn-primary" style="display:inline-flex;justify-content:center;padding:15px 32px;font-size:16px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
-        Schedule Your Call Now →
-      </a>
+      <!-- Step 2: book the call inline -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+        <div style="background:var(--navy);padding:20px 28px;display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:2px">Step 2</div>
+            <div style="font-size:15px;font-weight:700;color:#fff">Schedule Your Confidential 30-Min Call</div>
+          </div>
+        </div>
+        <div id="calendlyInline" style="min-height:650px;width:100%"></div>
+      </div>
     </div>
 
     <form id="intakeForm" style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:36px;box-shadow:0 2px 20px rgba(11,37,69,0.06)">
@@ -824,13 +842,13 @@ footer{
       </div>
       <div style="margin-bottom:16px">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-          <input type="checkbox" id="f_ack1" required style="margin-top:3px;flex-shrink:0;width:16px;height:16px"/>
+          <input type="checkbox" id="f_ack1" required checked style="margin-top:3px;flex-shrink:0;width:16px;height:16px"/>
           <span style="font-size:13px;color:var(--ink70);line-height:1.6">I have consulted or will consult with independent tax counsel regarding my ability to utilize §45Q credits under IRC §38(c) before signing the agreement.</span>
         </label>
       </div>
       <div style="margin-bottom:24px">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-          <input type="checkbox" id="f_ack2" required style="margin-top:3px;flex-shrink:0;width:16px;height:16px"/>
+          <input type="checkbox" id="f_ack2" required checked style="margin-top:3px;flex-shrink:0;width:16px;height:16px"/>
           <span style="font-size:13px;color:var(--ink70);line-height:1.6">I understand that §45Q credits cannot be re-transferred after acquisition under IRC §6418(a)(2) and that this is not an investment offering.</span>
         </label>
       </div>
@@ -1085,16 +1103,41 @@ footer{
         'Net Tax Savings: <strong style="color:var(--green)">' + data.deal.netBenefit + '</strong><br/>' +
         'Effective Tax Savings Rate: ' + data.deal.savingsRate;
 
-      // Pre-fill Calendly URL with name + email
-      const calUrl = data.calendlyUrl || 'https://calendly.com/carbon-credits-ben?name=' +
-        encodeURIComponent(payload.firstName + ' ' + payload.lastName) +
+      // Build Calendly URL with prefill
+      const calUrl = (data.calendlyUrl || 'https://calendly.com/carbon-credits-ben') +
+        (data.calendlyUrl && data.calendlyUrl.includes('?') ? '&' : '?') +
+        'name=' + encodeURIComponent(payload.firstName + ' ' + payload.lastName) +
         '&email=' + encodeURIComponent(payload.email);
-      document.getElementById('calendlyRedirect').href = calUrl;
 
-      // Auto-redirect to Calendly after 5 seconds
-      setTimeout(function() {
-        window.open(calUrl, '_blank');
-      }, 5000);
+      // Scroll to success
+      successBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Load Calendly inline widget (no page leave, highest booking rate)
+      if (window.Calendly) {
+        window.Calendly.initInlineWidget({
+          url: calUrl,
+          parentElement: document.getElementById('calendlyInline'),
+          prefill: {
+            name: payload.firstName + ' ' + payload.lastName,
+            email: payload.email,
+          },
+        });
+      } else {
+        // Fallback: load Calendly script then init
+        var script = document.createElement('script');
+        script.src = 'https://assets.calendly.com/assets/external/widget.js';
+        script.onload = function() {
+          window.Calendly.initInlineWidget({
+            url: calUrl,
+            parentElement: document.getElementById('calendlyInline'),
+            prefill: {
+              name: payload.firstName + ' ' + payload.lastName,
+              email: payload.email,
+            },
+          });
+        };
+        document.head.appendChild(script);
+      }
 
     } catch(ex) {
       err.textContent = ex.message;
