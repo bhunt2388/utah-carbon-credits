@@ -3,6 +3,7 @@
 
 const SIGNNOW_API = 'https://api.signnow.com';
 const SIGNNOW_TOKEN = process.env.SIGNNOW_TOKEN || '10b94f3f59594e3b131ae357c66c33cdc3be5c7831f5abcf41d8318891e897cb';
+const CALENDLY_TOKEN = process.env.CALENDLY_TOKEN;
 const TEMPLATE_DOC_ID = 'a663fba92a7e4598a88240968168e75426cd1c13';
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'ben.thrasher20@gmail.com';
 
@@ -201,9 +202,44 @@ export default async function handler(req, res) {
     // 2. Send internal notification
     await sendNotificationEmail(buyerName, email, phone, deal);
 
-    // 3. Build Calendly URL with pre-filled name/email
-    const calendlyBase = 'https://calendly.com/carbon-credits-ben';
-    const calendlyUrl = `${calendlyBase}?name=${encodeURIComponent(buyerName)}&email=${encodeURIComponent(email)}`;
+    // 3. Build Calendly scheduling link (one-time link via API if token available, fallback to prefilled URL)
+    let calendlyUrl = `https://calendly.com/carbon-credits-ben?name=${encodeURIComponent(buyerName)}&email=${encodeURIComponent(email)}`;
+    if (CALENDLY_TOKEN) {
+      try {
+        // Get the user's event type URI first
+        const meRes = await fetch('https://api.calendly.com/users/me', {
+          headers: { 'Authorization': `Bearer ${CALENDLY_TOKEN}`, 'Content-Type': 'application/json' },
+        });
+        const me = await meRes.json();
+        const userUri = me.resource?.uri;
+
+        if (userUri) {
+          const etRes = await fetch(`https://api.calendly.com/event_types?user=${encodeURIComponent(userUri)}&active=true`, {
+            headers: { 'Authorization': `Bearer ${CALENDLY_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          const et = await etRes.json();
+          const eventTypeUri = et.collection?.[0]?.uri;
+
+          if (eventTypeUri) {
+            const linkRes = await fetch('https://api.calendly.com/scheduling_links', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${CALENDLY_TOKEN}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                max_event_count: 1,
+                owner: eventTypeUri,
+                owner_type: 'EventType',
+              }),
+            });
+            const link = await linkRes.json();
+            if (link.resource?.booking_url) {
+              calendlyUrl = `${link.resource.booking_url}?name=${encodeURIComponent(buyerName)}&email=${encodeURIComponent(email)}`;
+            }
+          }
+        }
+      } catch (calErr) {
+        console.warn('Calendly API error, using fallback URL:', calErr.message);
+      }
+    }
 
     // 4. Return success + redirect URL
     return res.status(200).json({
