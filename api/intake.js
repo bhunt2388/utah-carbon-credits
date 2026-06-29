@@ -196,8 +196,9 @@ export default async function handler(req, res) {
     const deal = calcDeal(faceValue);
     const closingDate = new Date().toISOString().split('T')[0];
 
-    // 1. Clone template + send for signature via SignNow
-    const { docId } = await cloneAndSendDoc(buyerName, email, buyerTitle, deal, closingDate);
+    // 1. [SignNow disabled] — skip doc send for now
+    // const { docId } = await cloneAndSendDoc(buyerName, email, buyerTitle, deal, closingDate);
+    const docId = null;
 
     // 2. Send internal notification
     await sendNotificationEmail(buyerName, email, phone, deal);
@@ -261,7 +262,7 @@ export default async function handler(req, res) {
         verifyPhone: '801-400-2916',
         warning: 'DO NOT WIRE FUNDS WITHOUT FIRST VERIFYING BY CALLING 801-400-2916',
       },
-      message: `Agreement sent to ${email} for signature. Please schedule your call.`,
+      message: `Thanks ${buyerName} — please schedule your call below.`,
     });
 
   } catch (err) {
